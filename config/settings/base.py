@@ -1,12 +1,11 @@
 import os
 import environ
 from pathlib import Path
+from datetime import timedelta
 
-# --- Загружаем .env ---
 env = environ.Env()
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent.parent, '.env'))
 
-# --- Базовые настройки ---
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = env('SECRET_KEY', default='super-secret-key')
@@ -22,14 +21,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
     'corsheaders',
     'drf_spectacular',
-    "rest_framework_simplejwt",
-    "social_django",
-    #apps
-    'apps.accounts',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 
+    'apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -64,10 +63,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # --- Локализация ---
 LANGUAGE_CODE = 'ru-RU'
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'Asia/Bishkek'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -79,41 +77,76 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
+# --- Custom User Model ---
 AUTH_USER_MODEL = "accounts.User"
 
-# --- DRF ---
+# --- DRF Settings ---
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
 }
-AUTHENTICATION_BACKENDS = (
-    "social_core.backends.google.GoogleOAuth2",
-    "django.contrib.auth.backends.ModelBackend",
-)
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
-# LOGIN_REDIRECT_URL = "/api/auth/google/success/"
 
+# --- JWT Settings ---
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
+
+# --- Google OAuth2 Settings ---
+GOOGLE_OAUTH2_CLIENT_ID = env('GOOGLE_OAUTH2_CLIENT_ID', default='')
+GOOGLE_OAUTH2_CLIENT_SECRET = env('GOOGLE_OAUTH2_CLIENT_SECRET', default='')
+
+# --- Spectacular Settings ---
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Porter Kg API',
+    'DESCRIPTION': 'API для платформы Porter Kg - сервис такси и грузоперевозок',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': r'/api/',
 }
 
+# --- Jazzmin Settings ---
 JAZZMIN_SETTINGS = {
     "site_title": "Porter Kg",
     "site_header": "Админка Porter Kg",
     "site_brand": "Porter Kg",
+    "site_logo": None,
     "welcome_sign": "Добро пожаловать в админку Porter Kg!",
+    "copyright": "Porter Kg",
     "topmenu_links": [
         {"name": "Главная", "url": "/admin/", "permissions": ["auth.view_user"]},
+        {"name": "API Документация", "url": "/api/swagger/", "new_window": True},
     ],
     "show_ui_builder": True,
-
+    "changeform_format": "horizontal_tabs",
+    "related_modal_active": True,
 }
+
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
     "footer_small_text": False,
