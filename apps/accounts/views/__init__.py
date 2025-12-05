@@ -1,17 +1,38 @@
 from .auth_views import (
-    register_view,
-    login_view,
-    logout_view,
-    google_auth_view,
-    verify_email_view,
-    password_reset_request_view,
-    password_reset_confirm_view,
-    me_view
+    RegisterAPIView,
+    LoginAPIView,
+    LogoutAPIView,
+    GoogleAuthAPIView,
+    VerifyEmailAPIView,
+    PasswordResetRequestAPIView,
+    PasswordResetConfirmAPIView,
+    MeAPIView,
 )
-
 from .profile_views import (
     GuestProfileViewSet,
     DriverProfileViewSet,
-    CarViewSet,
-    my_profile_view
+    MyProfileAPIView,
 )
+from .car_views import (
+    CarViewSet,
+)
+
+__all__ = [
+    # Auth
+    'RegisterAPIView',
+    'LoginAPIView',
+    'LogoutAPIView',
+    'GoogleAuthAPIView',
+    'VerifyEmailAPIView',
+    'PasswordResetRequestAPIView',
+    'PasswordResetConfirmAPIView',
+    'MeAPIView',
+
+    # Profile
+    'GuestProfileViewSet',
+    'DriverProfileViewSet',
+    'MyProfileAPIView',
+
+    # Car
+    'CarViewSet',
+]

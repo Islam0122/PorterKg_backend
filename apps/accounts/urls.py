@@ -2,19 +2,21 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
-    register_view,
-    login_view,
-    logout_view,
-    google_auth_view,
-    verify_email_view,
-    password_reset_request_view,
-    password_reset_confirm_view,
-    me_view,
+    RegisterAPIView,
+    LoginAPIView,
+    LogoutAPIView,
+    GoogleAuthAPIView,
+    VerifyEmailAPIView,
+    PasswordResetRequestAPIView,
+    PasswordResetConfirmAPIView,
+    MeAPIView,
     GuestProfileViewSet,
     DriverProfileViewSet,
     CarViewSet,
-    my_profile_view
+    MyProfileAPIView,
 )
+
+app_name = 'accounts'
 
 router = DefaultRouter()
 router.register(r'profile/guest', GuestProfileViewSet, basename='guest-profile')
@@ -22,20 +24,26 @@ router.register(r'profile/driver', DriverProfileViewSet, basename='driver-profil
 router.register(r'car', CarViewSet, basename='car')
 
 urlpatterns = [
-    # Аутентификация
-    path('register/', register_view, name='register'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('google/', google_auth_view, name='google-auth'),
-    path('verify-email/', verify_email_view, name='verify-email'),
-    path('password-reset/', password_reset_request_view, name='password-reset'),
-    path('password-reset-confirm/', password_reset_confirm_view, name='password-reset-confirm'),
-    path('me/', me_view, name='me'),
+    # ===== Аутентификация =====
+    path('register/', RegisterAPIView.as_view(), name='register'),
+    path('login/', LoginAPIView.as_view(), name='login'),
+    path('logout/', LogoutAPIView.as_view(), name='logout'),
+    path('google/', GoogleAuthAPIView.as_view(), name='google-auth'),
+
+    # ===== Email верификация =====
+    path('verify-email/', VerifyEmailAPIView.as_view(), name='verify-email'),
+
+    # ===== Сброс пароля =====
+    path('password-reset/', PasswordResetRequestAPIView.as_view(), name='password-reset'),
+    path('password-reset-confirm/', PasswordResetConfirmAPIView.as_view(), name='password-reset-confirm'),
+
+    # ===== JWT токены =====
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 
-    # Профили
-    path('my-profile/', my_profile_view, name='my-profile'),
+    # ===== Текущий пользователь =====
+    path('me/', MeAPIView.as_view(), name='me'),
+    path('my-profile/', MyProfileAPIView.as_view(), name='my-profile'),
 
-    # Router URLs
+    # ===== Router URLs (профили и автомобили) =====
     path('', include(router.urls)),
 ]

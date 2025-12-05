@@ -27,6 +27,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://islam-dev\.up\.railway\.app$",
 ]
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:63342",
+    "http://127.0.0.1:63342",
     "http://127.0.0.1:3000",
     "http://localhost:3000",
     "https://islam-dev.up.railway.app",
