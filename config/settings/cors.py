@@ -24,12 +24,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http://127\.0\.0\.1(:\d+)?$",
     r"^http://localhost(:\d+)?$",
-    r"^https://islam-dev\.up\.railway\.app$",
+    r"^https://islamdev\.up\.railway\.app$",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:63342",
     "http://127.0.0.1:63342",
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "https://islam-dev.up.railway.app",
+    "https://islamdev.up.railway.app",
 ]
